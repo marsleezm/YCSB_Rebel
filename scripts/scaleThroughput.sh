@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sh ~/YCSB/scripts/clean_all_nodes.sh
+sh ~/YCSB/scripts/cleanAllNodes.sh
 
 InitialNodes=`head -5 scripts/allnodes`
 ExtraNodes=`tail -5 scripts/allnodes`

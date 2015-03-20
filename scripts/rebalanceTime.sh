@@ -1,6 +1,17 @@
 #!/bin/bash
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# This experiment adds five nodes into a running cluser of five 
+# nodes with different strategy. Due to current load of the cluster,
+# the optimal number of nodes to add in each time can be very 
+# different. This experiment checkes the rebalance time of adding 
+# different number of nodes, namely, from adding node one by
+# one to adding all five nodes together.
+#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-sh ~/YCSB/scripts/clean_all_nodes.sh 
+
+#Stop all Cassandra nodes.
+sh ~/YCSB/scripts/cleanAllNodes.sh 
 
 InitialNodes=`head -5 scripts/allnodes`
 ExtraNodes=`tail -5 scripts/allnodes`
@@ -14,10 +25,8 @@ TotalLoad=$1
 NodeC=$2
 
 Time=`date +'%Y-%m-%d-%H:%M:%S'`
-#NodeInBound=100
 for NodeNumToAdd in $(seq 1 $NodeNumLeft); do
 	Round=$NodeNumToAdd
-	#NodeNumToAdd=$((RemainC*CurrentNodeNum/NodeInBound))
 	TotalTime=0
 	CurrentNodes=($InitialNodes)
 	StrCurrentNodes=`echo ${CurrentNodes[@]}`
@@ -37,7 +46,7 @@ do
 	NodeNumToAdd=$((NodeNumToAdd>1?NodeNumToAdd:1))
 	echo "Capacity for rebalance:"$RemainC", Num of nodes to add:"$NodeNumToAdd
 
-	AddingNodes="${NodesToAdd[@]:0:$NodeNumToAdd}"  #$NodesRound}")
+	AddingNodes="${NodesToAdd[@]:0:$NodeNumToAdd}"
 
 	./scripts/command_to_all.sh "$StrCurrentNodes" "nodetool setstreamthroughput $RemainC"
 	./scripts/addNode.sh "$AddingNodes"

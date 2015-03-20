@@ -1,21 +1,17 @@
 #!/bin/bash
 
 FAIL=0
-nodes=$1
-command=$2
 echo $command" for nodes:"$nodes 
-#if [ $# -eq 1 ]
-#then
-#    nodes=`cat ./scripts/nodes`
-#elif [ $# -eq 2 ]
-#then
-#    nodes=`head -$2 ./scripts/nodes`
-#else
-#    nodes=`awk "NR==$2" ./scripts/nodes | cat`
-#fi
+if [ $# -eq 1 ]
+then
+    nodes=`cat ./scripts/allnodes`
+    command=$1
+else
+    nodes=$1
+    command=$2
+fi
 for node in $nodes
 do
-   #nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}
    nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}  
    sleep 2
 done

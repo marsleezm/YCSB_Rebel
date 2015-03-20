@@ -2,9 +2,9 @@
 #sudo killall java
 #Output="$2/"`date +'%Y-%m-%d-%H:%M:%S'`"-linear"
 if [ "$#" -eq 6 ]; then
-	Bandwidth=$(($6*8000))
-	Burst=$(($6*16000))
-	command="sudo tc class change dev eth0 parent 1:1 classid 1:10 htb rate ${Bandwidth}kbit burst ${Burst}k prio 1"
+	Bandwidth=$(($6))
+	Burst=$(($6))
+	command="sudo tc class change dev eth0 parent 1: classid 1:1 htb rate ${Bandwidth}kbps ceil ${Burst}kbps prio 1"
 	./scripts/command_to_all.sh "$1" "$command" 
 fi
 

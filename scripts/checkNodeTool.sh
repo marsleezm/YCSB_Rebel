@@ -9,7 +9,7 @@ if [ $# -eq 1 ]
 then
      nodes=$1
 else
-     nodes=`head -1 ./scripts/nodes`
+     nodes=`head -1 ./scripts/allnodes`
 fi
 echo "Checking if nodetool is working for "$nodes
 for node in $nodes
