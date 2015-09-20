@@ -20,7 +20,8 @@ TotalBandwidth=40
 RebalanceLimit=(30 20 10 5 3)
 BaseLineTime=300
 WRatio=(0.05)
-Targets=(50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850)
+#Targets=(50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850)
+Targets=(50 100)
 Time=`date +'%Y-%m-%d-%H:%M:%S'`
 Folder="results/$Time-3D"
 mkdir $Folder
