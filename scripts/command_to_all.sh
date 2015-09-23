@@ -1,7 +1,6 @@
 #!/bin/bash
 
 FAIL=0
-echo $command" for nodes:"$nodes 
 if [ $# -eq 1 ]
 then
     nodes=`cat ./scripts/allnodes`
@@ -10,6 +9,7 @@ else
     nodes=$1
     command=$2
 fi
+echo $command" for nodes:"$nodes 
 for node in $nodes
 do
    nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}  

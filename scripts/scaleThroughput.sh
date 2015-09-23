@@ -1,6 +1,16 @@
 #!/bin/bash
 
-sh ~/YCSB/scripts/cleanAllNodes.sh
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# This experiment adds five nodes into a running cluser of five 
+# nodes with different strategy. Due to current load of the cluster,
+# the optimal number of nodes to add in each time can be very 
+# different. This experiment checkes the rebalance time of adding 
+# different number of nodes, namely, from adding node one by
+# one to adding all five nodes together.
+#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+./scripts/cleanAllNodes.sh
 
 InitialNodes=`head -5 scripts/allnodes`
 ExtraNodes=`tail -5 scripts/allnodes`

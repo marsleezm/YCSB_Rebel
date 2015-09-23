@@ -1,15 +1,14 @@
 #!/bin/bash
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# This experiment adds five nodes into a running cluser of five 
-# nodes with different strategy. Due to current load of the cluster,
-# the optimal number of nodes to add in each time can be very 
-# different. This experiment checkes the rebalance time of adding 
-# different number of nodes, namely, from adding node one by
-# one to adding all five nodes together.
+# This experiment measures the impact of  data rebalance bandwidth,
+# the write ratio and number of system throughput on operation latency.
+# We add a node to an running node and limit the bandwidth for serving
+# workload (with tc by configRequestBand.sh) and data rebalance workload
+# , change the number of requesting throughput and write ratio to check
+# how the latency changes.  
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 ./scripts/cleanAllNodes.sh
 
@@ -17,7 +16,7 @@ ExistingNodes=`head -1 scripts/allnodes`
 NodesToAdd=`head -2 scripts/allnodes | tail -1`
 AllNodes=$ExistingNodes" "$NodesToAdd
 TotalBandwidth=40
-RebalanceLimit=(30 20 10 5 3)
+RebalanceLimit=(30)
 BaseLineTime=300
 WRatio=(0.05)
 #Targets=(50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850)

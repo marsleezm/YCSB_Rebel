@@ -4,6 +4,7 @@ AddingNodes=$5
 Output=$6
 FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
+# Loading phase...
 ./scripts/load.sh "$ClusterNodes" 100000 
 
 #Get overall latency
@@ -32,8 +33,11 @@ Time=`date +'%Y-%m-%d-%H:%M:%S'`
 TimeInSec=`date +%s`
 echo "Started at "$Time 
 
-echo "Request speed limit: "$8
-./scripts/runWorkload.sh $ClusterNodes $Output $2 $3 $7 $8 &
+echo "Request speed limit: "$8 "mb/s"
+command="sudo tc class change dev eth0 parent 1: classid 1:1 htb rate ${8}mbps ceil ${8}mbps prio 1"
+./scripts/command_to_all.sh "$1" "$ClusterNodes"
+
+./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 $8 &
 ##Check that benchmark is running
 ./scripts/rebalance/rebalance_finished.sh $FirstNode
 

@@ -1,8 +1,9 @@
 #!/bin/bash
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# This script sets the limit of port 9042 of a cassandra machine 
-# to 50mb so that cassandra can only use that amount for data migration
-# , as 9042 is the inter-node traffic port of cassandra.
+# This script initialize the configuration of tc for a machine hosting
+# cassandra on port 9042, which is used for serving client request by
+# cassandra. The 200 mb is just dummy value. It will be changed according
+# to dynamic configuration.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 nodes=`cat ./scripts/allnodes`
@@ -13,7 +14,7 @@ C1="sudo tc qdisc add dev eth0 root handle 1: htb default 10"
 #C4="sudo tc qdisc add dev eth0 parent 1:10 handle 10: sfq perturb 10"
 #C5="sudo iptables -A OUTPUT -t mangle -p tcp --sport 9042 -j MARK --set-mark 10"
 #C6="sudo tc filter add dev eth0 parent 1:0 prio 0 protocol ip handle 10 fw flowid 1:10"
-C2="sudo tc class add dev eth0 parent 1: classid 1:1 htb rate 50mbps ceil 50mbps" 
+C2="sudo tc class add dev eth0 parent 1: classid 1:1 htb rate 200mbps ceil 200mbps" 
 C4="sudo tc qdisc add dev eth0 parent 1:1 handle 10: sfq perturb 10"
 C5="sudo iptables -A OUTPUT -t mangle -p tcp --sport 9042 -j MARK --set-mark 10"
 C6="sudo tc filter add dev eth0 protocol ip parent 1:0 prio 1 handle 10 fw flowid 1:1"
