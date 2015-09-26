@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# This experiment measures the impact of  data rebalance bandwidth,
+# This experiment measures the impact of data rebalance bandwidth,
 # the write ratio and number of system throughput on operation latency.
 # We add a node to an running node and limit the bandwidth for serving
 # workload (with tc by configRequestBand.sh) and data rebalance workload

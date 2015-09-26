@@ -4,28 +4,14 @@ AddingNodes=$5
 Output=$6
 FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
-# Loading phase...
+
+##Load 100000 records...
 ./scripts/load.sh "$ClusterNodes" 100000 
 
-#Get overall latency
-#QueryResult=$(./scripts/command_to_all.sh "nodetool cfstats ycsb" 1)
-#tmp=$(echo "$QueryResult"|awk 'NR==4')
-#IFS=':' read -ra ARR <<< "$tmp"
-#Count=${ARR[1]}
-#Count=`echo $Count | tr -d '\r'`
-#tmp=`echo "$QueryResult"| awk 'NR==5'`
-#IFS=':' read -ra ARR <<< "$tmp"
-#tmp=${ARR[1]}
-#tmp=${tmp#?}
-#Latency=${tmp%?????}
-#OverallUpdate=$(echo "($Count * $Latency)" | bc -l)
-#echo $Latency" "$Count" "$OverallUpdate
-#exit
-
+##Set rebalance speed limit, start adding node
 ./scripts/command_to_all.sh "$ClusterNodes" "nodetool setstreamthroughput $1" 
 echo "Rebalance speed limit: "$1
 ./scripts/addNode.sh "$AddingNodes"
-
 ./scripts/rebalance/rebalance_started.sh $FirstNode 
 
 ##Start benchmark
@@ -33,12 +19,11 @@ Time=`date +'%Y-%m-%d-%H:%M:%S'`
 TimeInSec=`date +%s`
 echo "Started at "$Time 
 
-echo "Request speed limit: "$8 "mb/s"
-command="sudo tc class change dev eth0 parent 1: classid 1:1 htb rate ${8}mbps ceil ${8}mbps prio 1"
-./scripts/command_to_all.sh "$1" "$ClusterNodes"
+##Limit speed of serving user request
+./scripts/setRequestBand.sh "$ClusterNodes" "$ChangeBandWidth"
 
+##Start workload at the same time
 ./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 $8 &
-##Check that benchmark is running
 ./scripts/rebalance/rebalance_finished.sh $FirstNode
 
 ##Output rebalance time and latency

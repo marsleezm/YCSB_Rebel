@@ -12,8 +12,12 @@ fi
 echo $command" for nodes:"$nodes 
 for node in $nodes
 do
-   nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}  
-   sleep 2
+   ssh -t ubuntu@$node -i key ${command/localhost/$node} & 
+done
+
+for job in `jobs -p`
+do
+    wait $job || let "FAIL+=1"
 done
 
 if [ "$FAIL" == "0" ];

@@ -11,7 +11,7 @@
 
 
 #Stop all Cassandra nodes.
-sh ~/YCSB/scripts/cleanAllNodes.sh 
+./scripts/cleanAllNodes.sh 
 
 InitialNodes=`head -5 scripts/allnodes`
 ExtraNodes=`tail -5 scripts/allnodes`
@@ -54,9 +54,8 @@ do
 
 	UsedTime=`./scripts/rebalance/rebalance_finish_time.sh $FirstNode`
 	TotalTime=$(echo $TotalTime+$UsedTime | bc -l ) 	
-
 	echo "Used: "$UsedTime
-	
+
 	CurrentNodeNum=$((CurrentNodeNum+NodeNumToAdd))
 	echo "CurrentNode: "$CurrentNodeNum
 
