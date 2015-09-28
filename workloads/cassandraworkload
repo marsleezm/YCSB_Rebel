@@ -24,10 +24,11 @@
 
 
 port=9042
-fieldlength=1000
+fieldlength=2000
+fieldcount=20
 
 #recordcount=600000
-recordcount=600000
+recordcount=150000
 operationcount=600000
 workload=com.yahoo.ycsb.workloads.CoreWorkload
 

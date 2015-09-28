@@ -1,7 +1,7 @@
 Folder=$1
 Output=$2
 cd $Folder
-File=`ls  --ignore="*throughput" | grep 2014 | tail -1`
+File=`ls  --ignore="*throughput" | grep 201 | tail -1`
 
 tmp=`cat "$File" | grep "\[UPDATE\], Operations,"`
 IFS=',' read -ra ARR <<< "$tmp"

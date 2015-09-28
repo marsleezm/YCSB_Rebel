@@ -5,12 +5,13 @@ Output=$6
 FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
 
-##Load 100000 records...
-./scripts/load.sh "$ClusterNodes" 100000 
+##Load some records and warmup
+./scripts/load.sh "$ClusterNodes" 150000 
+./scripts/warmup.sh "$ClusterNodes" 0.1 200000 
 
 ##Set rebalance speed limit, start adding node
-./scripts/command_to_all.sh "$ClusterNodes" "nodetool setstreamthroughput $1" 
 echo "Rebalance speed limit: "$1
+./scripts/command_to_all.sh "$ClusterNodes" "nodetool setstreamthroughput $1" 
 ./scripts/addNode.sh "$AddingNodes"
 ./scripts/rebalance/rebalance_started.sh $FirstNode 
 
@@ -20,10 +21,10 @@ TimeInSec=`date +%s`
 echo "Started at "$Time 
 
 ##Limit speed of serving user request
-./scripts/setRequestBand.sh "$ClusterNodes" "$ChangeBandWidth"
+./scripts/setRequestBand.sh "$ClusterNodes" $8 
 
 ##Start workload at the same time
-./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 $8 &
+./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 &
 ./scripts/rebalance/rebalance_finished.sh $FirstNode
 
 ##Output rebalance time and latency
