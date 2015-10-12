@@ -6,8 +6,10 @@ FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
 
 ##Load some records and warmup
-./scripts/load.sh "$ClusterNodes" 150000 
-./scripts/warmup.sh "$ClusterNodes" 0.1 200000 
+./scripts/load.sh "$ClusterNodes" 200000 
+sleep 300
+./scripts/warmup.sh "$ClusterNodes" 0.1 100000 
+sleep 60 
 
 ##Set rebalance speed limit, start adding node
 echo "Rebalance speed limit: "$1

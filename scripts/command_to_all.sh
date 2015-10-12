@@ -9,7 +9,7 @@ else
     nodes=$1
     command=$2
 fi
-echo $command" for nodes:"$nodes 
+echo $command" for nodes:" "$nodes"
 for node in $nodes
 do
    nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}  

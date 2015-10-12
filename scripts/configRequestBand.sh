@@ -7,6 +7,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 nodes=`cat ./scripts/allnodes`
+C="sudo modprobe sch_netem"
 C0="sudo tc qdisc del root dev eth0" 
 C1="sudo tc qdisc add dev eth0 root handle 1: htb default 10" 
 #C2="sudo tc class add dev eth0 parent 1: classid 1:1 htb rate 400mbit burst 800m" 
@@ -18,6 +19,7 @@ C2="sudo tc class add dev eth0 parent 1: classid 1:1 htb rate 200mbps ceil 200mb
 C4="sudo tc qdisc add dev eth0 parent 1:1 handle 10: sfq perturb 10"
 C5="sudo iptables -A OUTPUT -t mangle -p tcp --sport 9042 -j MARK --set-mark 10"
 C6="sudo tc filter add dev eth0 protocol ip parent 1:0 prio 1 handle 10 fw flowid 1:1"
+./scripts/parallelCommand.sh "$nodes" "$C"
 ./scripts/parallelCommand.sh "$nodes" "$C0"
 ./scripts/parallelCommand.sh "$nodes" "$C1"
 ./scripts/parallelCommand.sh "$nodes" "$C2"
