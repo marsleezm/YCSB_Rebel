@@ -23,7 +23,7 @@ TimeInSec=`date +%s`
 echo "Started at "$Time 
 
 ##Limit speed of serving user request
-./scripts/setRequestBand.sh "$ClusterNodes" $8 
+#./scripts/setRequestBand.sh "$ClusterNodes" $8 
 
 ##Start workload at the same time
 ./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 &

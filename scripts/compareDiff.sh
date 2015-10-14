@@ -19,44 +19,49 @@ TotalBandwidth=100
 Limit=10
 #Baseline time is the time for rebalance under baseline limit
 BaseLineLimit=10
-BaseLineTime=70
+BaseLineTime=50
 WRatio=0
 #Targets=(50 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800 850)
 Target=1400
 NoRebTarget=700
 
+#Re-config time
+C0="sudo tc qdisc del root dev eth0"
+./scripts/command_to_all.sh "$C0"
 
-#T=(700 1400)
+#T=(1000 1500 2000)
 #for TT in ${T[@]}
 #do
-#Time=`date +'%Y%m%d%H%M%S'`
-#Folder="results/$Time-3D"
-#mkdir $Folder
-#./scripts/configRequestBand.sh
-#./scripts/stopNodes.sh "$AllNodes"
-#./scripts/startNodes.sh "$ExistingNodes"
-#EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit/Limit ))
-#echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$TT"op/s."
-#./scripts/loadAndBenchmark.sh $TotalBandwidth $WRatio $TT "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration
+#	Time=`date +'%Y%m%d%H%M%S'`
+#	Folder="results/$Time-3D"
+#	mkdir $Folder
+#	./scripts/stopNodes.sh "$AllNodes"
+#	./scripts/startNodes.sh "$ExistingNodes"
+#	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit/Limit ))
+#	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$TT"op/s."
+#	./scripts/loadAndBenchmark.sh $TotalBandwidth $WRatio $TT "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration
+#	sleep 600
 #done
 
-
-Limits=(0.5 0.2)
+sleep 600
+Limits=(0.7 1)
+Targets=(700 1000 1300 1600)
 for Limit in ${Limits[@]}
 do
-
-Time=`date +'%Y%m%d%H%M%S'`
-Folder="results/$Time-3D"
-mkdir $Folder
-./scripts/configRequestBand.sh
-./scripts/stopNodes.sh "$AllNodes"
-./scripts/startNodes.sh "$ExistingNodes"
-echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
-EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit*2 ))
-#RequestLimit=$((TotalBandwidth - Limit))
-RequestLimit=$TotalBandwidth
-./scripts/checkRebalanceTime.sh $Limit $WRatio $Target "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration $RequestLimit
-
+    for Target in ${Targets[@]}
+    do
+	Time=`date +'%Y%m%d%H%M%S'`
+	Folder="results/$Time-3D"
+	mkdir $Folder
+	./scripts/stopNodes.sh "$AllNodes"
+	./scripts/startNodes.sh "$ExistingNodes"
+	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
+	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit*2 ))
+	#RequestLimit=$((TotalBandwidth - Limit))
+	RequestLimit=$TotalBandwidth
+	./scripts/checkRebalanceTime.sh $Limit $WRatio $Target "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration $RequestLimit
+	sleep 600
+    done
 done
 exit
 
