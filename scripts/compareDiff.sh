@@ -29,23 +29,8 @@ NoRebTarget=700
 C0="sudo tc qdisc del root dev eth0"
 ./scripts/command_to_all.sh "$C0"
 
-#T=(1000 1500 2000)
-#for TT in ${T[@]}
-#do
-#	Time=`date +'%Y%m%d%H%M%S'`
-#	Folder="results/$Time-3D"
-#	mkdir $Folder
-#	./scripts/stopNodes.sh "$AllNodes"
-#	./scripts/startNodes.sh "$ExistingNodes"
-#	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit/Limit ))
-#	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$TT"op/s."
-#	./scripts/loadAndBenchmark.sh $TotalBandwidth $WRatio $TT "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration
-#	sleep 600
-#done
-
-sleep 600
-Limits=(0.7 1)
-Targets=(700 1000 1300 1600)
+Limits=(1 2 4 10)
+Targets=(1000 1300 1600)
 for Limit in ${Limits[@]}
 do
     for Target in ${Targets[@]}
@@ -56,14 +41,30 @@ do
 	./scripts/stopNodes.sh "$AllNodes"
 	./scripts/startNodes.sh "$ExistingNodes"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
-	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit*2 ))
+	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit / Limit))
 	#RequestLimit=$((TotalBandwidth - Limit))
 	RequestLimit=$TotalBandwidth
 	./scripts/checkRebalanceTime.sh $Limit $WRatio $Target "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration $RequestLimit
 	sleep 600
     done
 done
+
+sleep 600
+T=(1000 1500 2000)
+for TT in ${T[@]}
+do
+	Time=`date +'%Y%m%d%H%M%S'`
+	Folder="results/$Time-3D"
+	mkdir $Folder
+	./scripts/stopNodes.sh "$AllNodes"
+	./scripts/startNodes.sh "$ExistingNodes"
+	EstRebalanceDuration=$(( BaseLineTime*BaseLineLimit/Limit ))
+	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$TT"op/s."
+	./scripts/loadAndBenchmark.sh $TotalBandwidth $WRatio $TT "$ExistingNodes" "$NodesToAdd" $Folder $EstRebalanceDuration
+	sleep 600
+done
 exit
+
 
 Time=`date +'%Y%m%d%H%M%S'`
 Folder="results/$Time-3D"
