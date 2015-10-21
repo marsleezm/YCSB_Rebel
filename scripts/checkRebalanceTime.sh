@@ -6,8 +6,10 @@ FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
 
 ##Load some records and warmup
-./scripts/load.sh "$ClusterNodes" 150000 
-./scripts/warmup.sh "$ClusterNodes" 0.1 200000 
+./scripts/load.sh "$ClusterNodes" 200000 
+sleep 300
+./scripts/warmup.sh "$ClusterNodes" 0.1 100000 
+sleep 60 
 
 ##Set rebalance speed limit, start adding node
 echo "Rebalance speed limit: "$1
@@ -21,7 +23,7 @@ TimeInSec=`date +%s`
 echo "Started at "$Time 
 
 ##Limit speed of serving user request
-./scripts/setRequestBand.sh "$ClusterNodes" $8 
+#./scripts/setRequestBand.sh "$ClusterNodes" $8 
 
 ##Start workload at the same time
 ./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7 &
