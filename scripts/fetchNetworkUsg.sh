@@ -2,6 +2,9 @@
 
 Command1="cat /sys/class/net/eth0/statistics/rx_bytes"
 Command2="cat /sys/class/net/eth0/statistics/tx_bytes"
+Command3="nodetool cfstats | awk 'NR ==9 || NR==10'"
+Command4="du -ch /var/lib/cassandra/data | tail -1"
+
 File=$1"/$2_netinfo"
 FirstNode=`head -1 ./scripts/allnodes`
 AllNodes=`cat ./scripts/allnodes`
@@ -10,5 +13,8 @@ for Node in ${AllNodes}
 do
     RX=`ssh -i key ubuntu@$Node "$Command1"`
     TX=`ssh -i key ubuntu@$Node "$Command2"`
-    echo $Node $RX $TX >> $File
+    #DataStat=`ssh -i key ubuntu@$Node "$Command3"`
+    DiskStat=`ssh -i key ubuntu@$Node "$Command4"`
+    Data=($DiskStat)
+    echo $Node $RX $TX ${Data[0]} >> $File
 done

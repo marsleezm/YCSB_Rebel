@@ -12,7 +12,7 @@ do
     Line2Str=($Line2)
     Diff1=`expr ${Line2Str[1]} - ${Line1Str[1]}`
     Diff2=`expr ${Line2Str[2]} - ${Line1Str[2]}`
-    echo $Diff1 $Diff2 >> $Output
+    echo ${Line1Str[0]} $Diff1 $Diff2 ${Line1Str[3]} ${Line2Str[3]} >> $Output
     ((Index++)) 
 done < $File2
 
