@@ -17,11 +17,11 @@ FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
 AllNodes=$ExistingNodes" "$NodesToAdd
 
-for j in `seq 1 3`;
-do
-NodesToAdd=`tail -$j ./scripts/allnodes`
-echo "Num of nodes to add is:"$j", nodes to add are "$NodesToAdd
-	for i in `seq 1 2`;
+#for j in `seq 1 3`;
+#do
+#NodesToAdd=`tail -$j ./scripts/allnodes`
+#echo "Num of nodes to add is:"$j", nodes to add are "$NodesToAdd
+	for i in `seq 1 3`;
 	do
 		Time=`date +'%Y%m%d-%H%M%S'`
 		Folder="results/$Time-rebel-expr"
@@ -55,4 +55,4 @@ echo "Num of nodes to add is:"$j", nodes to add are "$NodesToAdd
 		./scripts/fetchNetworkUsg.sh $Folder end 
 		./scripts/compareRebelStatDiff.sh $Folder
 	done
-done
+#done
