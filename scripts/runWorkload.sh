@@ -2,8 +2,8 @@
 #sudo killall java
 #Output="$2/"`date +'%Y-%m-%d-%H:%M:%S'`"-linear"
 Time=`date +'%Y-%m-%d-%H:%M:%S'`
-Output=$2/$Time
-ThroughOut=$2/$Time"-throughput"
+Output=$2/output
+ThroughOut=$2/throughput
 echo "Output to $Output"
 
 HOST="$1"
@@ -11,7 +11,8 @@ WRatio=$3
 RRatio=$(echo "1-$WRatio" | bc -l)
 Target=$4
 Duration=$5
-Time=`date +%s`
+TimeInS=`date +%s`
+touch $2/$Time
 
 if [ $Target -eq 0 ]
 then
@@ -25,5 +26,5 @@ else
 fi
 
 NewTime=`date +%s`
-Duration=$((NewTime-Time))
+Duration=$((NewTime-TimeInS))
 echo "Benchmark duration: "$Duration
