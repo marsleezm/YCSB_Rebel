@@ -19,6 +19,7 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 
 for i in `seq 1 3`;
 do
+	sleep 300
 	Time=`date +'%Y%m%d-%H%M%S'`
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
@@ -30,7 +31,7 @@ do
 	#Sleep for balancing
 	sleep 30
 	./scripts/command_to_all.sh "$NodesToAdd" "sudo iptables -A OUTPUT -p tcp --dport 9042"
-	./scripts/checkPortStat.sh "$NodesToAdd" 240 $Folder &
+	./scripts/checkPortStat.sh "$AllNodes" 240 $Folder &
 	./scripts/runWorkload.sh "$AllNodes" $Folder 0.1 0 240 &
 	sleep 80
 	./scripts/fetchNetworkUsg.sh $Folder  start
@@ -39,7 +40,7 @@ do
 	./scripts/rebalance/rebalance_started.sh $FirstNode
 	T=`date +'%Y-%m-%d-%H:%M:%S'`
 	TInSec=`date +%s`
-	for N in ${NodesToAdd}
+	for N in ${AllNodes}
 	do
 	    echo "Rebalance started" $T  >> $Folder/$N
 	done
@@ -51,7 +52,7 @@ do
 	echo "Started at "$Time
 	./scripts/rebalance/rebalance_finished.sh $FirstNode
 	T2=`date +'%Y-%m-%d-%H:%M:%S'`
-	for N in ${NodesToAdd}
+	for N in ${AllNodes}
 	do
 	    echo "Rebalance finished" $T2 >> $Folder/$N
 	done
