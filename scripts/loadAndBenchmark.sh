@@ -1,15 +1,16 @@
 #!/bin/bash
+WRatio=$2
+Target=$3
 ClusterNodes=$4
 AddingNodes=$5
 Output=$6
+Duration=$7
 FirstNode=($ClusterNodes)
 FirstNode=${FirstNode[0]}
 
 ##Load some records and warmup
-./scripts/load.sh "$ClusterNodes" 200000
+./scripts/load.sh "$ClusterNodes" 2500000
 sleep 300
-./scripts/warmup.sh "$ClusterNodes" 0.1 100000
-sleep 60
 
 ##Start benchmark
 Time=`date +'%Y-%m-%d-%H:%M:%S'`
@@ -20,7 +21,7 @@ echo "Started at "$Time
 #./scripts/setRequestBand.sh "$ClusterNodes" $1 
 
 ##Start workload at the same time
-./scripts/runWorkload.sh "$ClusterNodes" $Output $2 $3 $7
+./scripts/runWorkload.sh "$ClusterNodes" $Output $WRatio $Target $Duration
 
 ##Output rebalance time and latency
 NewTime=`date +'%Y-%m-%d-%H:%M:%S'`
