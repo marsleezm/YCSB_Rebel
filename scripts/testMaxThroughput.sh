@@ -12,7 +12,8 @@ else
         ClusterNodes=`cat scripts/allnodes`
 	echo "Nodes not specified.. Using all nodes:""$ClusterNodes"
 fi
-./scripts/restartNodes.sh "$ClusterNodes"
+./scripts/stopNodes.sh "$ClusterNodes"
+./scripts/startNodes.sh "$ClusterNodes"
 Folder=results/`date +'%Y-%m-%d-%H:%M:%S'`
 mkdir $Folder
 Output=$Folder/output
