@@ -1,8 +1,14 @@
 #!/bin/bash
 set -e
 
+if [ $# -eq 1 ]
+then
+    Nodes=$1
+else
+    Nodes=`cat ./scripts/allnodes`
+fi
 First=`head -1 ./scripts/allnodes`
-for node in `cat ./scripts/allnodes`
+for node in $Nodes 
 do
 IP=$node
 #Change 127.0.0.1 localhost in hosts to $IP localhost. It's done in the following way because command_to_all replaces

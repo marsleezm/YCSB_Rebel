@@ -9,67 +9,50 @@
 # how the latency changes.  
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-./scripts/cleanAllNodes.sh
-
-ExistingNodes=`head -2 scripts/allnodes`
-NodesToAdd=`tail -1 scripts/allnodes`
+#./scripts/cleanAllNodes.sh
+ExistingNodes=`head -4 scripts/allnodes`
+NodesToAdd=`tail -2 scripts/allnodes`
 FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
 AllNodes=$ExistingNodes" "$NodesToAdd
 
-for i in `seq 1 3`;
+#./scripts/stopAndRemove.sh 172.31.3.161
+#./scripts/startNodes.sh 172.31.3.161
+#./scripts/rebalance/rebalance_started.sh $FirstNode
+#./scripts/rebalance/rebalance_finished.sh $FirstNode
+
+Limits="0 2 5 10"
+for Limit in $Limits;
 do
 	sleep 300
 	Time=`date +'%Y%m%d-%H%M%S'`
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
-	./scripts/stopNodes.sh "$AllNodes"
-	./scripts/startNodes.sh "$ExistingNodes"
+	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput 0"
+	./scripts/command_to_all.sh "$NodesToAdd" "nodetool decommission"
+	./scripts/stopAndRemove.sh "$NodesToAdd"
+	Target=2300
+	WRatio=0.1
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
-
-	./scripts/load.sh "$ExistingNodes" 150000
-	#Sleep for balancing
-	sleep 30
-	./scripts/command_to_all.sh "$NodesToAdd" "sudo iptables -A OUTPUT -p tcp --dport 9042"
-	./scripts/checkPortStat.sh "$AllNodes" 240 $Folder &
-	./scripts/runWorkload.sh "$AllNodes" $Folder 0.1 0 240 &
-	sleep 80
-	./scripts/fetchNetworkUsg.sh $Folder  start
+	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
+	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target 2700 &
+	sleep 800
 
 	./scripts/addNode.sh "$NodesToAdd"
 	./scripts/rebalance/rebalance_started.sh $FirstNode
 	T=`date +'%Y-%m-%d-%H:%M:%S'`
 	TInSec=`date +%s`
-	for N in ${AllNodes}
-	do
-	    echo "Rebalance started" $T  >> $Folder/$N
-	done
-	echo "Rebalance started" $T >> $Folder/output
-	echo "Rebalance started" $T >> $Folder/throughput
+	echo "Rebalance started" $T >> $Folder/rebel_dur
+	echo "Rebalance finished" $T 
 
-	Time=`date +'%Y-%m-%d-%H:%M:%S'`
-	TimeInSec=`date +%s`
-	echo "Started at "$Time
 	./scripts/rebalance/rebalance_finished.sh $FirstNode
 	T2=`date +'%Y-%m-%d-%H:%M:%S'`
-	for N in ${AllNodes}
-	do
-	    echo "Rebalance finished" $T2 >> $Folder/$N
-	done
-	echo "Rebalance finished" $T2 >> $Folder/output
-	echo "Rebalance finished" $T2 >> $Folder/throughput
+	echo "Rebalance finished" $T2 >> $Folder/rebel_dur
+	echo "Rebalance finished" $T2 
 
 	##Output rebalance time and latency
-	NewTime=`date +'%Y-%m-%d-%H:%M:%S'`
-	NewTimeInSec=`date +%s`
-	echo "Finished data transfer at "$NewTime
-	Diff=$((NewTimeInSec-TimeInSec))
-	echo "Finished at":$NewTime", used"$Diff >> $Folder"/rebalance_time"
-
 	for job in `jobs -p`
         do
                 wait $job
         done
-	./scripts/command_to_all.sh "nodetool cleanup"
-	./scripts/fetchNetworkUsg.sh $Folder end 
 done

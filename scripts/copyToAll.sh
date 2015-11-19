@@ -20,7 +20,7 @@ fi
 echo "Path is "$path
 for node in $nodes
 do
-    sudo   scp -i key $file ubuntu@$node:$path & 
+    scp -i key $file ubuntu@$node:$path & 
 done
 
 for job in `jobs -p`
