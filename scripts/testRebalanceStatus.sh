@@ -8,11 +8,9 @@ set -e
 #./scripts/command_to_all.sh $NodeToAdd "$rmData"
 #./scripts/addNode.sh $NodeToAdd 
 
-Time=`date +'%Y-%m-%d-%H:%M:%S'`
-Folder="results/"$Time
-mkdir $Folder
+Folder=$1
 
-for I in `seq 1 100`
+for I in `seq 1 300`
 do
 	Command1="cat /sys/class/net/eth0/statistics/rx_bytes"
 	Command2="cat /sys/class/net/eth0/statistics/tx_bytes"
@@ -27,5 +25,5 @@ do
 	    Data=($DiskStat)
 	    echo $Node $RX $TX ${Data[0]} >> $File
 	done
-	sleep 5
+	sleep 10
 done
