@@ -21,9 +21,11 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
-Limits="2 5 10"
+
+Limits="0 2 5 10"
 for Limit in $Limits;
 do
+	sleep 300
 	Time=`date +'%Y%m%d-%H%M%S'`
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
@@ -35,10 +37,19 @@ do
 	./scripts/parallelCommand.sh "$ExistingNodes" "nodetool repair"
 	Target=2300
 	WRatio=0.1
+	if [ $Limit -eq 0 ];
+	then
+	    RebalanceTime=$((5000/15))
+	    TotalTime=$((RebalanceTime+1200+1200))
+	else
+	    RebalanceTime=$((5000/Limit))
+	    TotalTime=$((RebalanceTime+1200+1200))
+	fi
+	touch $Folder/$Limit"M"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
 	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
 	./scripts/testRebalanceStatus.sh $Folder &
-	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target 3300 &
+	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
 	sleep 1200
 
 	./scripts/addNode.sh "$NodesToAdd"
