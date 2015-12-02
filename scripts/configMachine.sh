@@ -29,6 +29,8 @@ ChangeNewHeap="sudo sed -i 's/#HEAP_NEWSIZE.*/HEAP_NEWSIZE=\x221000M\x22/' $ENV"
 ChangeName="sudo sed -i 's/cluster_name: .*/cluster_name: \x27Rebel\x27/g' $YAML"
 #Replace seed
 ReplaceSeed="sudo sed -i 's/- seeds: .*/- seeds: \x22$First\x22/g' $YAML"
+#Create data folder if there is no
+CreateDataFolder="sudo chmod 777 /mnt && sudo mkdir -p /mnt/cassandra_data/commitlog && sudo mkdir -p /mnt/cassandra_data/data && sudo mkdir -p /mnt/cassandra_data/saved_caches && sudo chmod 777 -R /mnt && sudo chown -R cassandra:cassandra /mnt/cassandra_data"
 #Replace listen address
 ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML"
 
@@ -36,10 +38,11 @@ ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML
 ./scripts/parallelCommand.sh $node "$ReplaceHostName"
 ./scripts/parallelCommand.sh $node "$IncreaseTimeout"
 ./scripts/parallelCommand.sh $node "$ChangeName"
+./scripts/parallelCommand.sh $node "$ReplaceSeed"
 ./scripts/parallelCommand.sh $node "$ChangeHeapSize"
 ./scripts/parallelCommand.sh $node "$ChangeNewHeap"
-./scripts/parallelCommand.sh $node "$ReplaceSeed"
 ./scripts/parallelCommand.sh $node "$ReduceMemtableSize"
+./scripts/parallelCommand.sh $node "$CreateDataFolder"
 #./scripts/parallelCommand.sh $node "$ReducePendingCommit"
 ./scripts/parallelCommand.sh $node "$ReplaceListenAddr"
 done

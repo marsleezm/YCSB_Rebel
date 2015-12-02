@@ -16,9 +16,9 @@ touch $2/$Time
 
 if [ $Target -eq 0 ]
 then
-    OPCount=$(( 2000*Duration ))
-    echo "Benchmarking nodes:" "$HOST" "Operation count is "$OPCount, "ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount"=$OPCount
-    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 30 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
+    OPCount=$(( 3000*Duration ))
+    echo "Benchmarking nodes:" "$HOST" ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount"  
+    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 30 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount  -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
 else
     OPCount=$(( Target*Duration ))
     echo "Benchmarking nodes:" "$HOST" "Operation count is "$OPCount, "ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount

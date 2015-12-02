@@ -16,8 +16,9 @@ FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
 AllNodes=$ExistingNodes" "$NodesToAdd
 
-#./scripts/stopAndRemove.sh 172.31.3.161
-#./scripts/startNodes.sh 172.31.3.161
+./scripts/stopAndRemove.sh "$AllNodes"  
+./scripts/startNodes.sh "$ExistingNodes"  
+./scripts/load.sh "$ExistingNodes" 2000000
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
@@ -35,7 +36,7 @@ do
 	./scripts/parallelCommand.sh "$NodesToAdd" "nodetool decommission"
 	./scripts/stopAndRemove.sh "$NodesToAdd"
 	./scripts/parallelCommand.sh "$ExistingNodes" "nodetool repair"
-	Target=2300
+	Target=2200
 	WRatio=0.1
 	if [ $Limit -eq 0 ];
 	then
