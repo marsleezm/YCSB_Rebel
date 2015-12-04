@@ -16,9 +16,6 @@ FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
 AllNodes=$ExistingNodes" "$NodesToAdd
 
-./scripts/stopAndRemove.sh "$AllNodes"  
-./scripts/startNodes.sh "$ExistingNodes"  
-./scripts/load.sh "$ExistingNodes" 2000000
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
@@ -26,24 +23,20 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 Limits="0 2 5 10"
 for Limit in $Limits;
 do
-	sleep 300
 	Time=`date +'%Y%m%d-%H%M%S'`
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
-	./scripts/stopNodes.sh "$ExistingNodes" 
+	./scripts/stopAndRemove.sh "$AllNodes" 
 	./scripts/startNodes.sh "$ExistingNodes" 
-	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput 0"
-	./scripts/parallelCommand.sh "$NodesToAdd" "nodetool decommission"
-	./scripts/stopAndRemove.sh "$NodesToAdd"
-	./scripts/parallelCommand.sh "$ExistingNodes" "nodetool repair"
-	Target=2200
+	./scripts/load.sh "$ExistingNodes" 1000000
+	Target=3600
 	WRatio=0.1
 	if [ $Limit -eq 0 ];
 	then
-	    RebalanceTime=$((5000/15))
+	    RebalanceTime=$((2000/15))
 	    TotalTime=$((RebalanceTime+1200+1200))
 	else
-	    RebalanceTime=$((5000/Limit))
+	    RebalanceTime=$((2000/Limit))
 	    TotalTime=$((RebalanceTime+1200+1200))
 	fi
 	touch $Folder/$Limit"M"
@@ -70,4 +63,5 @@ do
         do
                 wait $job
         done
+	sleep 300
 done
