@@ -24,7 +24,7 @@
 
 
 port=9042
-fieldlength=1000
+fieldlength=2000
 fieldcount=10
 
 #recordcount=600000

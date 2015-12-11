@@ -20,30 +20,32 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
 
-BeforeRebalance=600
+BeforeRebalance=900
 AfterRebalance=900
-Limits="0 1 2 5"
+Limits="2000 4000 8000"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
+	./scripts/configRequestBand.sh
 	./scripts/stopAndRemove.sh "$AllNodes" 
 	./scripts/startNodes.sh "$ExistingNodes" 
-	./scripts/load.sh "$ExistingNodes" 5000000
-	Target=4500
-	WRatio=0.1
+	./scripts/load.sh "$ExistingNodes" 2000000
+	Target=3200
+	WRatio=0
 	if [ $Limit -eq 0 ];
 	then
-	    RebalanceTime=$((9000/15))
+	    RebalanceTime=$((3600/10))
 	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
 	else
-	    RebalanceTime=$((9000/Limit))
+	    RebalanceTime=$((4300000/Limit))
 	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
 	fi
 	touch $Folder/$Limit"M"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
-	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
+	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
+	./scripts/setRequestBand.sh "$ExistingNodes" $Limit 
 	./scripts/testRebalanceStatus.sh $Folder &
 	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
 	sleep $BeforeRebalance
@@ -65,5 +67,14 @@ do
         do
                 wait $job
         done
-	sleep 300
 done
+
+Time=`date +'%Y%m%d-%H%M%S'`
+Folder="results/$Time-rebel-expr"
+mkdir $Folder
+./scripts/stopAndRemove.sh "$AllNodes"
+./scripts/startNodes.sh "$ExistingNodes"
+./scripts/load.sh "$ExistingNodes" 2000000
+Target=3200
+WRatio=0
+./scripts/runWorkload.sh "$ExistingNodes" $Folder $WRatio $Target 2400 
