@@ -19,8 +19,14 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
+sudo ./scripts/copyToAll.sh ./scripts/getGC.sh
 
-BeforeRebalance=900
+sudo ./scripts/command_to_all.sh "sudo iptables -A INPUT -p tcp --dport 9042"
+sudo ./scripts/command_to_all.sh "sudo iptables -A INPUT -p udp --dport 9042"
+sudo ./scripts/command_to_all.sh "sudo iptables -A INPUT -p tcp --dport 7000"
+sudo ./scripts/command_to_all.sh "sudo iptables -A INPUT -p udp --dport 7000"
+
+BeforeRebalance=1200
 AfterRebalance=900
 Limits="2000 4000 8000"
 for Limit in $Limits;
@@ -32,6 +38,7 @@ do
 	./scripts/stopAndRemove.sh "$AllNodes" 
 	./scripts/startNodes.sh "$ExistingNodes" 
 	./scripts/load.sh "$ExistingNodes" 2000000
+	#./scripts/load.sh "$ExistingNodes" 100000
 	Target=3200
 	WRatio=0
 	if [ $Limit -eq 0 ];
@@ -42,6 +49,9 @@ do
 	    RebalanceTime=$((4300000/Limit))
 	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
 	fi
+	./scripts/checkStat.sh "$AllNodes" $TotalTime $Folder & 
+	TotalTS=$((TotalTime/10))
+	sudo ./scripts/nohup_to_all.sh "./getGC.sh $TotalTS"
 	touch $Folder/$Limit"M"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
 	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
@@ -67,14 +77,57 @@ do
         do
                 wait $job
         done
+	sudo ./scripts/copyFromAll.sh localhost-gc ~ $Folder 
 done
 
-Time=`date +'%Y%m%d-%H%M%S'`
-Folder="results/$Time-rebel-expr"
-mkdir $Folder
-./scripts/stopAndRemove.sh "$AllNodes"
-./scripts/startNodes.sh "$ExistingNodes"
-./scripts/load.sh "$ExistingNodes" 2000000
-Target=3200
-WRatio=0
-./scripts/runWorkload.sh "$ExistingNodes" $Folder $WRatio $Target 2400 
+./scripts/configRequestBand.sh
+Limits="0 2 4 8" 
+for Limit in $Limits;
+do
+	Time=`date +'%Y%m%d-%H%M%S'`
+	Folder="results/$Time-rebel-expr"
+	mkdir $Folder
+	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput 0"
+	./scripts/stopAndRemove.sh "$AllNodes" 
+	./scripts/startNodes.sh "$ExistingNodes" 
+	./scripts/load.sh "$ExistingNodes" 2000000
+	Target=3200
+	WRatio=0
+	if [ $Limit -eq 0 ];
+	then
+	    RebalanceTime=$((3600/10))
+	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
+	else
+	    RebalanceTime=$((2200/Limit))
+	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
+	fi
+	touch $Folder/$Limit"M"
+	./scripts/checkStat.sh "$AllNodes" $TotalTime $Folder & 
+	TotalTS=$((TotalTime/10))
+	sudo ./scripts/nohup_to_all.sh "./getGC.sh $TotalTS"
+	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
+	./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
+	./scripts/testRebalanceStatus.sh $Folder &
+	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
+	sleep $BeforeRebalance
+
+	./scripts/addNode.sh "$NodesToAdd"
+	./scripts/rebalance/rebalance_started.sh $FirstNode
+	T=`date +'%Y-%m-%d-%H:%M:%S'`
+	TInSec=`date +%s`
+	echo "Rebalance started" $T >> $Folder/rebel_dur
+	echo "Rebalance finished" $T 
+
+	./scripts/rebalance/rebalance_finished.sh $FirstNode
+	T2=`date +'%Y-%m-%d-%H:%M:%S'`
+	echo "Rebalance finished" $T2 >> $Folder/rebel_dur
+	echo "Rebalance finished" $T2 
+
+	##Output rebalance time and latency
+	for job in `jobs -p`
+        do
+                wait $job
+        done
+	sudo ./scripts/copyFromAll.sh localhost-gc ~ $Folder 
+done
+
