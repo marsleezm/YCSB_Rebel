@@ -13,6 +13,6 @@ Folder=`pwd`
 echo "Stopping all nodes:"$Nodes 
 stopC="sudo service cassandra stop"
 rmData="sudo rm -rf /mnt/cassandra_data/data /mnt/cassandra_data/commitlog /mnt/cassandra_data/saved_caches"
-$Folder/scripts/command_to_all.sh "$Nodes" "$stopC"
-$Folder/scripts/command_to_all.sh "$Nodes" "$rmData"
+$Folder/scripts/parallelCommand.sh "$Nodes" "$stopC"
+$Folder/scripts/parallelCommand.sh "$Nodes" "$rmData"
 echo "Stopped nodes."

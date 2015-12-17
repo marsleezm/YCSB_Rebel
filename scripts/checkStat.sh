@@ -7,9 +7,8 @@ Port2=9042
 CurrentTime=`date +%s` 
 NextTime=$CurrentTime
 FinalTime=$((Duration+CurrentTime))
-while [[  $Current -le $FinalTime ]]; do
+while [[  $CurrentTime -le $FinalTime ]]; do
 	CurrentTime=`date +%s`
-	echo "Haha"
 	if [[ $CurrentTime -ge $NextTime ]]
 	then
 		echo "Fetching data"
@@ -17,12 +16,12 @@ while [[  $Current -le $FinalTime ]]; do
 		for Host in ${Hosts}
 		do
 			Time=`date +'%Y%m%d-%H%M%S'`
-			Result1=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep dpt:$Port1"`
+			Result1=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port1"`
 			echo "$Time: $Result1" >> $Folder/$Host-$Port1
-			Result2=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep dpt:$Port2"`
+			Result2=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port2"`
 			echo "$Time: $Result2" >> $Folder/$Host-$Port2
-			Result3=`ssh ubuntu@$Host -X -i key "nodetool compactionstats | grep remaining"`
-			echo "$Time: $Result3" >> $Folder/$Host-compact
+			#Result3=`ssh ubuntu@$Host -X -i key "nodetool compactionstats | grep remaining"`
+			#echo "$Time: $Result3" >> $Folder/$Host-compact
 		done
 	fi
 	sleep 1 
