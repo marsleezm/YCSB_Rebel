@@ -20,8 +20,8 @@ while [[  $CurrentTime -le $FinalTime ]]; do
 			echo "$Time: $Result1" >> $Folder/$Host-$Port1
 			Result2=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port2"`
 			echo "$Time: $Result2" >> $Folder/$Host-$Port2
-			#Result3=`ssh ubuntu@$Host -X -i key "nodetool compactionstats | grep remaining"`
-			#echo "$Time: $Result3" >> $Folder/$Host-compact
+			Result3=`ssh ubuntu@$Host -X -i key "nodetool compactionstats | grep remaining"`
+			echo "$Time: $Result3" >> $Folder/$Host-compact
 		done
 	fi
 	sleep 1 
