@@ -15,7 +15,7 @@ echo "Output to $Output"
 
 if [ $Target -eq 0 ]
 then
-    OPCount=$(( 3000*Duration ))
+    OPCount=$(( 10000*Duration ))
     echo "Benchmarking nodes:" "$HOST" ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount"  
     bin/ycsb run cassandra-cql -p host="$HOST"  -threads 96 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount  -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
 else

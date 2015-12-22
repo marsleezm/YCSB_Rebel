@@ -26,7 +26,7 @@ sudo ./scripts/copyToAll.sh ./scripts/getDStat.sh
 
 BeforeRebalance=2000
 AfterRebalance=1800
-Limits="2000 4000 8000 100000"
+Limits="2000 100000"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
@@ -57,6 +57,7 @@ do
 	./scripts/checkPortStat.sh "$AllNodes" $TotalTime $Folder & 
 	./scripts/checkNodetoolStat.sh "$AllNodes" $TotalTime $Folder & 
 	TotalTS=$((TotalTime/10))
+	sudo ./scripts/getDStat.sh $TotalTS &
 	sudo ./scripts/nohup_to_all.sh "./getDStat.sh $TotalTS"
 	touch $Folder/$Limit"M"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
