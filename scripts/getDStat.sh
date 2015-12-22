@@ -1,5 +1,5 @@
 #!/bin/bash
 
 A=`pgrep java`
-Ip=`hostname --ip-address`
-dstat -c -d -l --output $IP-dstat 10 $1
+Ip=`sudo hostname --ip-address`
+sudo dstat -c -d -l --output "./$Ip-dstat" 10 $1
