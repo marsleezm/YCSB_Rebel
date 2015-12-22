@@ -21,12 +21,12 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
-sudo ./scripts/copyToAll.sh ./scripts/getGC.sh
+sudo ./scripts/copyToAll.sh ./scripts/getDStat.sh
 
 
 BeforeRebalance=2000
 AfterRebalance=1800
-Limits="2000 4000 8000"
+Limits="2000 4000 8000 100000"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
@@ -41,7 +41,7 @@ do
 	./scripts/startNodes.sh "$ExistingNodes" 
 	./scripts/load.sh "$ExistingNodes" 2000000
 	#./scripts/load.sh "$ExistingNodes" 100000
-	Target=4000
+	Target=0
 	WRatio=0
 	if [ $Limit -eq 0 ];
 	then
@@ -54,9 +54,10 @@ do
 	sudo ./scripts/parallelCommand.sh "sudo iptables -A OUTPUT -p tcp --sport 9042"
 	sudo ./scripts/parallelCommand.sh "$ExistingNodes" "sudo iptables -A OUTPUT -p tcp --sport 7000"
 	sudo ./scripts/parallelCommand.sh "$NodesToAdd" "sudo iptables -A INPUT -p tcp --sport 7000"
-	./scripts/checkStat.sh "$AllNodes" $TotalTime $Folder & 
+	./scripts/checkPortStat.sh "$AllNodes" $TotalTime $Folder & 
+	./scripts/checkNodetoolStat.sh "$AllNodes" $TotalTime $Folder & 
 	TotalTS=$((TotalTime/10))
-	sudo ./scripts/nohup_to_all.sh "./getGC.sh $TotalTS"
+	sudo ./scripts/nohup_to_all.sh "./getDStat.sh $TotalTS"
 	touch $Folder/$Limit"M"
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
 	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
@@ -82,5 +83,5 @@ do
         do
                 wait $job
         done
-	#sudo ./scripts/copyFromAll.sh localhost-gc ~ $Folder 
+	sudo ./scripts/copyFromAll.sh localhost-dstat ~ $Folder 
 done

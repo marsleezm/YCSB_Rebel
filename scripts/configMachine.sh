@@ -33,6 +33,7 @@ ReplaceSeed="sudo sed -i 's/- seeds: .*/- seeds: \x22$First\x22/g' $YAML"
 CreateDataFolder="sudo chmod 777 /mnt && sudo mkdir -p /mnt/cassandra_data/commitlog && sudo mkdir -p /mnt/cassandra_data/data && sudo mkdir -p /mnt/cassandra_data/saved_caches && sudo chmod 777 -R /mnt && sudo chown -R cassandra:cassandra /mnt/cassandra_data"
 #Replace listen address
 ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML"
+InstallDStat="sudo apt-get -y install dstat"
 
 ./scripts/parallelCommand.sh $node "$ReplaceHost"
 ./scripts/parallelCommand.sh $node "$ReplaceHostName"
@@ -45,4 +46,5 @@ ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML
 ./scripts/parallelCommand.sh $node "$CreateDataFolder"
 #./scripts/parallelCommand.sh $node "$ReducePendingCommit"
 ./scripts/parallelCommand.sh $node "$ReplaceListenAddr"
+./scripts/parallelCommand.sh $node "$InstallDStat"
 done
