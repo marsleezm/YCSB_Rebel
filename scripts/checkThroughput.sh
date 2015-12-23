@@ -43,7 +43,7 @@ do
 	#./scripts/load.sh "$ExistingNodes" 100000
 	Target=0
 	WRatio=0
-	if [ $Limit -eq 0 ];
+	if [ $Limit -eq 100000 ];
 	then
 	    RebalanceTime=$((3600/10))
 	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))

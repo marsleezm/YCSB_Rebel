@@ -15,13 +15,13 @@ echo "Output to $Output"
 
 if [ $Target -eq 0 ]
 then
-    OPCount=$(( 10000*Duration ))
+    OPCount=$(( 7000*Duration ))
     echo "Benchmarking nodes:" "$HOST" ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount"  
-    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 96 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount  -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
+    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 128 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount  -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
 else
     OPCount=$(( Target*Duration ))
     echo "Benchmarking nodes:" "$HOST" "Operation count is "$OPCount, "ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount
-    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 96 -p target=$Target -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount -p maxexecutiontime=$Duration -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
+    bin/ycsb run cassandra-cql -p host="$HOST"  -threads 128 -p target=$Target -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount -p maxexecutiontime=$Duration -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
 fi
 
 NewTime=`date +%s`
