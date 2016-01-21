@@ -12,9 +12,12 @@ FirstNode=${FirstNode[0]}
 Folder=`pwd`
 echo "Starting all nodes:"$Nodes 
 startC="sudo service cassandra start"
-$Folder/scripts/command_to_all.sh "$Nodes" "$startC" 
+for node in $Nodes
+do
+$Folder/scripts/command_to_all.sh "$node" "$startC" 
+sleep 50
+done
 echo "Sleeping for 15 seconds..."
-sleep 15
 #./scripts/checkNodeTool.sh "$Nodes"
 #sleep 10
 ./scripts/createTable.sh "$FirstNode"

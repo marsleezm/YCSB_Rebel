@@ -1,0 +1,4 @@
+cassandra-stress user profile=./rebel.yaml ops\(timeline=1\) n=2000000  -node file=./scripts/allnodes -rate threads=64
+
+
+cassandra-stress write n=2000000 -node file=./scripts/allnodes -col n=fixed\(5\) size=fixed\(1000\)
