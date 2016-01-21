@@ -35,6 +35,8 @@ echo "Started at "$Time
 RRatio=$(echo "1-$WRatio" | bc -l)
 bin/ycsb run cassandra-cql -p host="$ClusterNodes"  -threads 32 -p updateproportion=$WRatio -p readproportion=$RRatio -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
 
+echo "Finished benchmarking"
+
 ##Output rebalance time and latency
 NewTime=`date +'%Y-%m-%d-%H:%M:%S'`
 NewTimeInSec=`date +%s`

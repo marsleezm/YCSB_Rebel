@@ -20,19 +20,24 @@ ReplaceHostName="sudo sed -i 's/.* -Djava.rmi.server.hostname=.*/JVM_OPTS=\x22$J
 #Increase read/write timeout
 IncreaseTimeout="sudo sed -i 's/write_request_timeout_in_ms: .*/write_request_timeout_in_ms: 100000/' $YAML && 
 		sudo sed -i 's/read_request_timeout_in_ms: .*/read_request_timeout_in_ms: 50000/' $YAML"
-ReduceMemtableSize="sudo sed -i 's/.*memtable_total_space_in_mb: .*/memtable_total_space_in_mb: 600/' $YAML" 
+ReduceMemtableSize="sudo sed -i 's/.*memtable_total_space_in_mb: .*/memtable_total_space_in_mb: 150/' $YAML" 
+IncreaseMemtableWriter="sudo sed -i 's/.*memtable_flush_writers: .*/memtable_flush_writers: 2/' $YAML" 
+#Concurrent="sudo sed -i 's/.*concurrent_reads: .*/concurrent_reads: 48/' $YAML && sudo sed -i 's/.*concurrent_writes: .*/concurrent_writes: /' $YAML" 
 #ReduceDiskSync="sudo sed -i 's/commitlog_sync_period_in_ms: .*/commitlog_sync_period_in_ms: 2000/' $YAML" 
 #ReducePendingCommit="sudo sed -i 's/.*commitlog_periodic_queue_size.*/commitlog_periodic_queue_size: 600/' $YAML" 
-ChangeHeapSize="sudo sed -i 's/#MAX_HEAP_SIZE.*/MAX_HEAP_SIZE=\x225G\x22/' $ENV" 
-ChangeNewHeap="sudo sed -i 's/#HEAP_NEWSIZE.*/HEAP_NEWSIZE=\x221000M\x22/' $ENV" 
 ChangeLocalJVM="sudo sed -i 's/    LOCAL_JMX=yes/    LOCAL_JMX=no/' $ENV" 
 ChangeLocalJVMAuth="sudo sed -i 's/authenticate=true/authenticate=false/' $ENV" 
+ChangeHeapSize="sudo sed -i 's/#MAX_HEAP_SIZE.*/MAX_HEAP_SIZE=\x221G\x22/' $ENV" 
+ChangeNewHeap="sudo sed -i 's/#HEAP_NEWSIZE.*/HEAP_NEWSIZE=\x22300M\x22/' $ENV" 
 #Change cluster name
 ChangeName="sudo sed -i 's/cluster_name: .*/cluster_name: \x27Rebel\x27/g' $YAML"
 #Replace seed
 ReplaceSeed="sudo sed -i 's/- seeds: .*/- seeds: \x22$First\x22/g' $YAML"
+#Create data folder if there is no
+CreateDataFolder="sudo chmod 777 /mnt && sudo mkdir -p /mnt/cassandra_data/commitlog && sudo mkdir -p /mnt/cassandra_data/data && sudo mkdir -p /mnt/cassandra_data/saved_caches && sudo chmod 777 -R /mnt && sudo chown -R cassandra:cassandra /mnt/cassandra_data"
 #Replace listen address
 ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML"
+InstallDStat="sudo apt-get -y install dstat"
 
 ./scripts/parallelCommand.sh $node "$ReplaceHost"
 ./scripts/parallelCommand.sh $node "$ReplaceHostName"
@@ -44,6 +49,10 @@ ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML
 ./scripts/parallelCommand.sh $node "$ReduceMemtableSize"
 ./scripts/parallelCommand.sh $node "$ChangeLocalJVM"
 ./scripts/parallelCommand.sh $node "$ChangeLocalJVMAuth"
+./scripts/parallelCommand.sh $node "$CreateDataFolder"
+./scripts/parallelCommand.sh $node "$IncreaseMemtableWriter"
+#./scripts/parallelCommand.sh $node "$Concurrent"
 #./scripts/parallelCommand.sh $node "$ReducePendingCommit"
 ./scripts/parallelCommand.sh $node "$ReplaceListenAddr"
+./scripts/parallelCommand.sh $node "$InstallDStat"
 done

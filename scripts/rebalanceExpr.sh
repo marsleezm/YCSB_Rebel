@@ -9,9 +9,8 @@
 # how the latency changes.  
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-./scripts/cleanAllNodes.sh
 
-ExistingNodes=`head -3 scripts/allnodes`
+ExistingNodes=`head -4 scripts/allnodes`
 NodesToAdd=`tail -2 scripts/allnodes`
 FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
@@ -26,12 +25,12 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 		Time=`date +'%Y%m%d-%H%M%S'`
 		Folder="results/$Time-rebel-expr"
 		mkdir $Folder
-		./scripts/stopNodes.sh "$AllNodes"
-		./scripts/startNodes.sh "$ExistingNodes"
-		echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s."
+		./scripts/stopNodes.sh "$ExistingNodes"
+        	./scripts/startNodes.sh "$ExistingNodes"
+        	./scripts/parallelCommand.sh "$NodesToAdd" "nodetool decommission"
+        	./scripts/stopAndRemove.sh "$NodesToAdd"
+        	./scripts/parallelCommand.sh "$ExistingNodes" "nodetool repair"
 
-		./scripts/load.sh "$ExistingNodes" 100000
-		sleep 200
 		./scripts/fetchRingInfo.sh $Folder  start
 		./scripts/fetchNetworkUsg.sh $Folder  start
 
@@ -40,7 +39,6 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 
 		Time=`date +'%Y-%m-%d-%H:%M:%S'`
 		TimeInSec=`date +%s`
-		echo "Started at "$Time
 		./scripts/rebalance/rebalance_finished.sh $FirstNode
 
 		##Output rebalance time and latency
@@ -50,7 +48,6 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 		Diff=$((NewTimeInSec-TimeInSec))
 		echo $Diff >> $Folder"/rebalance_time"
 
-		./scripts/command_to_all.sh "nodetool cleanup"
 		./scripts/fetchRingInfo.sh $Folder end 
 		./scripts/fetchNetworkUsg.sh $Folder end 
 		./scripts/compareRebelStatDiff.sh $Folder
