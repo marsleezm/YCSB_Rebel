@@ -25,6 +25,8 @@ ReduceMemtableSize="sudo sed -i 's/.*memtable_total_space_in_mb: .*/memtable_tot
 #ReducePendingCommit="sudo sed -i 's/.*commitlog_periodic_queue_size.*/commitlog_periodic_queue_size: 600/' $YAML" 
 ChangeHeapSize="sudo sed -i 's/#MAX_HEAP_SIZE.*/MAX_HEAP_SIZE=\x225G\x22/' $ENV" 
 ChangeNewHeap="sudo sed -i 's/#HEAP_NEWSIZE.*/HEAP_NEWSIZE=\x221000M\x22/' $ENV" 
+ChangeLocalJVM="sudo sed -i 's/    LOCAL_JMX=yes/    LOCAL_JMX=no/' $ENV" 
+ChangeLocalJVMAuth="sudo sed -i 's/authenticate=true/authenticate=false/' $ENV" 
 #Change cluster name
 ChangeName="sudo sed -i 's/cluster_name: .*/cluster_name: \x27Rebel\x27/g' $YAML"
 #Replace seed
@@ -36,10 +38,12 @@ ReplaceListenAddr="sudo sed -i 's/listen_address:.*/listen_address: $IP/g' $YAML
 ./scripts/parallelCommand.sh $node "$ReplaceHostName"
 ./scripts/parallelCommand.sh $node "$IncreaseTimeout"
 ./scripts/parallelCommand.sh $node "$ChangeName"
+./scripts/parallelCommand.sh $node "$ReplaceSeed"
 ./scripts/parallelCommand.sh $node "$ChangeHeapSize"
 ./scripts/parallelCommand.sh $node "$ChangeNewHeap"
-./scripts/parallelCommand.sh $node "$ReplaceSeed"
 ./scripts/parallelCommand.sh $node "$ReduceMemtableSize"
+./scripts/parallelCommand.sh $node "$ChangeLocalJVM"
+./scripts/parallelCommand.sh $node "$ChangeLocalJVMAuth"
 #./scripts/parallelCommand.sh $node "$ReducePendingCommit"
 ./scripts/parallelCommand.sh $node "$ReplaceListenAddr"
 done
