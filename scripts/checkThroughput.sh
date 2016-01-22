@@ -25,7 +25,7 @@ sudo ./scripts/copyToAll.sh ./scripts/getDStat.sh
 
 BeforeRebalance=600
 AfterRebalance=1500
-Limits="2000 100000"
+Limits="100000"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
