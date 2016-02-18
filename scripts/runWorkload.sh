@@ -15,7 +15,7 @@ echo "Output to $Output"
 
 if [ $Target -eq 0 ]
 then
-    echo "Benchmarking nodes:" "$HOST" ReadRatio="$RRatio" WriteRatio="$WRatio" OpCount="$OPCount"  
+    echo "Benchmarking nodes:" "$HOST" ReadRatio="$RRatio" WriteRatio="$WRatio"
     #bin/ycsb run cassandra-cql -p host="$HOST"  -threads 128 -p updateproportion=$WRatio -p readproportion=$RRatio -p operationcount=$OPCount  -p maxexecutiontime=$Duration  -P workloads/cassandraworkload -s > "$Output" 2> "$ThroughOut"
     timeout ${Duration}s cassandra-stress user profile=./rebel.yaml ops\(timeline=1\) n=50000000  -node file=./scripts/allnodes -rate threads=64 > $Output 2>&1 
 else
