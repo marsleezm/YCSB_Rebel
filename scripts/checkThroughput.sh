@@ -23,9 +23,9 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 
 sudo ./scripts/copyToAll.sh ./scripts/getDStat.sh
 
-BeforeRebalance=600
+BeforeRebalance=1200
 AfterRebalance=1500
-Limits="200000 2000 5000"
+Limits="200000 2000"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
@@ -63,6 +63,7 @@ do
 	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
 	./scripts/setRequestBand.sh "$ExistingNodes" $Limit 
 	#./scripts/testRebalanceStatus.sh $Folder &
+	sleep 120
 	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
 	sleep $BeforeRebalance
 
