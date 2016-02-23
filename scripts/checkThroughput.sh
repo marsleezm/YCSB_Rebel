@@ -21,7 +21,7 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_started.sh $FirstNode
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
-sudo ./scripts/copyToAll.sh ./scripts/getDStat.sh
+./scripts/copyToAll.sh ./scripts/getDStat.sh .
 
 BeforeRebalance=1200
 AfterRebalance=1500
@@ -38,7 +38,8 @@ do
 	sudo ./scripts/parallelCommand.sh "$ExistingNodes" "sudo iptables -D OUTPUT -p tcp --sport 7000"
 	sudo ./scripts/parallelCommand.sh "$NodesToAdd" "sudo iptables -D INPUT -p tcp --sport 7000"
 	./scripts/startNodes.sh "$ExistingNodes" 
-	./scripts/load.sh "$ExistingNodes" 2000000 
+	#./scripts/load.sh "$ExistingNodes" 2000000 
+	./scripts/parallel_load.sh "$ExistingNodes" 4000000 
 	#./scripts/load.sh "$ExistingNodes" 100000
 	Target=0
 	WRatio=0
@@ -64,7 +65,8 @@ do
 	./scripts/setRequestBand.sh "$ExistingNodes" $Limit 
 	#./scripts/testRebalanceStatus.sh $Folder &
 	sleep 120
-	./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
+	#./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
+	./scripts/parallel_run.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
 	sleep $BeforeRebalance
 
 	./scripts/addNode.sh "$NodesToAdd"

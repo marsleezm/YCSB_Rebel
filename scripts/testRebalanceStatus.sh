@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e 
+USER=`cat ./scripts/user`
 #NodeToAdd=`tail -1 ./scripts/allnodes`
 #./scripts/stopNodes.sh $NodeToAdd 
 #./scripts/configMachine.sh $NodeToAdd 
@@ -19,9 +20,9 @@ do
 	for Node in ${AllNodes}
 	do
 	    File=$Folder/$Node
-	    RX=`ssh -i key ubuntu@$Node "$Command1"`
-	    TX=`ssh -i key ubuntu@$Node "$Command2"`
-	    DiskStat=`ssh -i key ubuntu@$Node "$Command4"`
+	    RX=`ssh -i key $USER@$Node "$Command1"`
+	    TX=`ssh -i key $USER@$Node "$Command2"`
+	    DiskStat=`ssh -i key $USER@$Node "$Command4"`
 	    Data=($DiskStat)
 	    echo $Node $RX $TX ${Data[0]} >> $File
 	done

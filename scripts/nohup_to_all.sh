@@ -1,5 +1,6 @@
 #!/bin/bash
 
+USER=`cat ./scripts/user`
 FAIL=0
 if [ $# -eq 1 ]
 then
@@ -12,7 +13,7 @@ fi
 echo $command" for nodes:" "$nodes"
 for node in $nodes
 do
-   nohup ssh -t ubuntu@$node -i key ${command/localhost/$node} & 
+   nohup ssh -t $USER@$node -i key ${command/localhost/$node} & 
    sleep 1 
 done
 

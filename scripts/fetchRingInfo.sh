@@ -1,10 +1,11 @@
 #!/bin/bash
 
+USER=`cat ./scripts/user`
 Command1="nodetool ring"
 File=$1"/$2_ringinfo"
 FirstNode=`head -1 ./scripts/allnodes`
 AllNodes=`cat ./scripts/allnodes`
-Result=`ssh -i key ubuntu@$FirstNode "$Command1"`
+Result=`ssh -i key $USER@$FirstNode "$Command1"`
 echo "$Result"
 for Node in ${AllNodes}
 do

@@ -7,6 +7,6 @@ then
 else
 	Node=`cat scripts/allnodes | head -1`
 fi
-./scripts/copyToAll.sh ./scripts/createtable.txt
+./scripts/copyToAll.sh ./scripts/createtable.txt .
 createTable="cqlsh -f createtable.txt"
 ./scripts/command_to_all.sh "$Node" "$createTable"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+USER=`cat ./scripts/user`
+
 FAIL=0
 echo $command" for nodes:"$nodes 
 if [ $# -eq 3 ]
@@ -18,7 +20,7 @@ echo "Path is "$path
 for node in $nodes
 do
     FileName=${file/localhost/$node}
-    scp -i key $file ubuntu@$node:$path/$FileName $folder & 
+    scp -i key $file $USER@$node:$path/$FileName $folder/$node-$FileName & 
 done
 
 for job in `jobs -p`

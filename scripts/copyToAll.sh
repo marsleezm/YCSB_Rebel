@@ -1,5 +1,6 @@
 #!/bin/bash
 
+USER=`cat ./scripts/user`
 FAIL=0
 echo $command" for nodes:"$nodes 
 if [ $# -eq 1 ]
@@ -7,7 +8,7 @@ then
     nodes=`cat ./scripts/allnodes`
     file=$1
     path=~
-elif [ $# -eq 2]
+elif [ $# -eq 2 ]
 then
     nodes=`cat ./scripts/allnodes`
     file=$1
@@ -20,7 +21,7 @@ fi
 echo "Path is "$path
 for node in $nodes
 do
-    scp -i key $file ubuntu@$node:$path & 
+    scp -i key $file $USER@$node:$path & 
 done
 
 for job in `jobs -p`

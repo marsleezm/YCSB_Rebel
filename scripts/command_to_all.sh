@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FAIL=0
+USER=`cat ./scripts/user`
 if [ $# -eq 1 ]
 then
     nodes=`cat ./scripts/allnodes`
@@ -12,7 +13,9 @@ fi
 echo $command" for nodes:" "$nodes"
 for node in $nodes
 do
-   nohup ssh -t ubuntu@$node -i key ${command/localhost/$node}  
+   C1=${command/localhost/$node}
+   C2=${C1/sudo/"echo marco | sudo -S"}
+   nohup ssh -t $USER@$node -i key $C2 
    sleep 2
 done
 

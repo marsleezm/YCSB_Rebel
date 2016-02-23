@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+USER=`cat ./scripts/user`
 Hosts=$1
 Duration=$2
 Folder=$3
@@ -18,9 +19,9 @@ while [[  $CurrentTime -le $FinalTime ]]; do
 		for Host in ${Hosts}
 		do
 			Time=`date +'%Y%m%d-%H%M%S'`
-			Result1=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port1"`
+			Result1=`ssh $USER@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port1"`
 			echo "$Time: $Result1" >> $Folder/$Host-$Port1
-			Result2=`ssh ubuntu@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port2"`
+			Result2=`ssh $USER@$Host -X -i key "sudo iptables -L -n -v -x | grep spt:$Port2"`
 			echo "$Time: $Result2" >> $Folder/$Host-$Port2
 		done
 	fi
