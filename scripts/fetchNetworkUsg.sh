@@ -3,7 +3,7 @@
 USER=`cat ./scripts/user`
 Command1="cat /sys/class/net/eth0/statistics/rx_bytes"
 Command2="cat /sys/class/net/eth0/statistics/tx_bytes"
-Command3="nodetool cfstats | awk 'NR ==9 || NR==10'"
+Command3="echo marco | sudo -S nodetool cfstats | awk 'NR ==9 || NR==10'"
 Command4="du -ch /var/lib/cassandra/data | tail -1"
 
 File=$1"/$2_netinfo"

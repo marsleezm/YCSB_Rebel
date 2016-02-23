@@ -3,6 +3,7 @@
 TimeInSec=`date +%s`
 if [ $# -eq 2 ]; then
     echo "$1" > ./to_load
+    Count=$2
 else
     Count=$1
 fi

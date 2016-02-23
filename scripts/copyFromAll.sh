@@ -20,7 +20,7 @@ echo "Path is "$path
 for node in $nodes
 do
     FileName=${file/localhost/$node}
-    scp -i key $file $USER@$node:$path/$FileName $folder/$node-$FileName & 
+    scp -i key $USER@$node:$path/$FileName $folder/$node-$FileName & 
 done
 
 for job in `jobs -p`
