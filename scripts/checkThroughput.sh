@@ -28,7 +28,7 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 BeforeRebalance=1200
 AfterRebalance=1500
 Limits="400000 4000 2000"
-SetAffinity="ps aux | grep cassandra | tail -1 | awk -F ' '  '{print \$2}' | xargs sudo taskset -cp 2,4"
+SetAffinity="ps aux | grep '[c]assandra' | awk -F ' '  '{print \$2}' | xargs sudo taskset -cp 2,4"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
