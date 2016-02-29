@@ -11,9 +11,11 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #./scripts/cleanAllNodes.sh
 
+NumExistingNode=3
+NumNodeToAdd=1
 set -e
-ExistingNodes=`head -3 scripts/allnodes`
-NodesToAdd=`tail -1 scripts/allnodes`
+ExistingNodes=`head -${NumExistingNode} scripts/allnodes`
+NodesToAdd=`tail -${NumNodeToAdd} scripts/allnodes`
 FirstNode=`head -1 scripts/allnodes`
 echo "Existing nodes are " "$ExistingNodes" ", nodes to add are " "$NodesToAdd"
 AllNodes=$ExistingNodes" "$NodesToAdd
@@ -23,8 +25,7 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 
 ./scripts/copyToAll.sh ./scripts/getDStat.sh .
 
-BeforeRebalance=60
-#BeforeRebalance=1200
+BeforeRebalance=1200
 AfterRebalance=1500
 Limits="400000 4000 2000"
 for Limit in $Limits;
@@ -33,15 +34,15 @@ do
 	Folder="results/$Time-rebel-expr"
 	mkdir $Folder
 	./scripts/configRequestBand.sh
-	./scripts/stopAndRemove.sh "$AllNodes" 
+	./scripts/stopAndRemove.sh 
 	sudo ./scripts/parallelCommand.sh "sudo iptables -D OUTPUT -p tcp --sport 9042"
 	sudo ./scripts/parallelCommand.sh "sudo iptables -D INPUT -p tcp --dport 9042"
 	sudo ./scripts/parallelCommand.sh "$ExistingNodes" "sudo iptables -D OUTPUT -p tcp --sport 7000"
 	sudo ./scripts/parallelCommand.sh "$NodesToAdd" "sudo iptables -D INPUT -p tcp --sport 7000"
 	./scripts/startNodes.sh "$ExistingNodes" 
 	#./scripts/load.sh "$ExistingNodes" 2000000 
-	./scripts/parallel_load.sh "$ExistingNodes" 2000000 
-	#./scripts/load.sh "$ExistingNodes" 100000
+	./scripts/parallel_load.sh "$ExistingNodes" 12000000 
+	#./scripts/load.sh "$ExistingNodes" 00000
 	Target=0
 	WRatio=0
 	if [ $Limit -gt 100000 ];
@@ -52,6 +53,7 @@ do
 	    RebalanceTime=$((4300000/Limit))
 	    TotalTime=$((RebalanceTime+BeforeRebalance+AfterRebalance))
 	fi
+
 	sudo ./scripts/parallelCommand.sh "sudo iptables -A OUTPUT -p tcp --sport 9042"
 	sudo ./scripts/parallelCommand.sh "$ExistingNodes" "sudo iptables -A OUTPUT -p tcp --sport 7000"
 	sudo ./scripts/parallelCommand.sh "$NodesToAdd" "sudo iptables -A INPUT -p tcp --sport 7000"
@@ -64,11 +66,8 @@ do
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s, total time is "$TotalTime
 	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
 	./scripts/setRequestBand.sh "$ExistingNodes" $Limit 
-	sleep 20
-	#sleep 120
-	#./scripts/runWorkload.sh "$AllNodes" $Folder $WRatio $Target $TotalTime &
-	TotalTime=300
-	./scripts/parallel_run.sh 4 $Folder $WRatio $Target $TotalTime &
+	sleep 120
+	./scripts/parallel_run.sh $NumExistingNode $Folder $WRatio $Target $TotalTime &
 	sleep $BeforeRebalance
 
 	./scripts/addNode.sh "$NodesToAdd"

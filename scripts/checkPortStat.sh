@@ -10,13 +10,11 @@ Port2=9042
 CurrentTime=`date +%s` 
 NextTime=$CurrentTime
 FinalTime=$((Duration+CurrentTime))
-	echo $FinalTime
+echo $FinalTime
 while [[  $CurrentTime -le $FinalTime ]]; do
 	CurrentTime=`date +%s`
-	echo $CurrentTime
 	if [[ $CurrentTime -ge $NextTime ]]
 	then
-		echo "Checking port stat.. next time reached"
 		NextTime=$((NextTime+10))
 		for Host in ${Hosts}
 		do
