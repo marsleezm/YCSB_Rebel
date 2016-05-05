@@ -24,11 +24,12 @@ AllNodes=$ExistingNodes" "$NodesToAdd
 #./scripts/rebalance/rebalance_finished.sh $FirstNode
 
 ./scripts/copyToAll.sh ./scripts/getDStat.sh .
+./scripts/copyToAll.sh ./scripts/confineCPU.sh .
 
-BeforeRebalance=1200
+BeforeRebalance=1600
 AfterRebalance=1500
-Limits="400000 4000 2000"
-SetAffinity="ps aux | grep '[c]assandra' | awk -F ' '  '{print \$2}' | xargs sudo taskset -cp 2,4"
+Limits="4000 2000"
+#SetAffinity="ps aux | grep '[c]assandra' | awk -F ' '  '{print \$2}' > pid; A=\`cat pid\`;sudo taskset -cp 2,4 \$A"
 for Limit in $Limits;
 do
 	Time=`date +'%Y%m%d-%H%M%S'`
@@ -43,7 +44,7 @@ do
 	./scripts/startNodes.sh "$ExistingNodes" 
 	./scripts/parallelCommand.sh "$ExistingNodes" "$SetAffinity"
 	#./scripts/load.sh "$ExistingNodes" 2000000 
-	./scripts/parallel_load.sh "$ExistingNodes" 12000000 
+	./scripts/parallel_load.sh "$ExistingNodes" 20000000 
 	#./scripts/load.sh "$ExistingNodes" 00000
 	Target=0
 	WRatio=0
@@ -68,11 +69,15 @@ do
 	echo "Rebalance limit: "$Limit", Write Ratio: "$WRatio", Operation target: "$Target"op/s, total time is "$TotalTime
 	#./scripts/command_to_all.sh "$AllNodes" "nodetool setstreamthroughput $Limit"
 	./scripts/setRequestBand.sh "$ExistingNodes" $Limit 
-	sleep 120
+	sleep 20
 	./scripts/parallel_run.sh $NumExistingNode $Folder $WRatio $Target $TotalTime &
+	sleep 120 & sudo ./scripts/parallelCommand.sh "$AllNodes" "sudo ./confineCPU.sh"
+	sleep 240 & sudo ./scripts/parallelCommand.sh "$AllNodes" "sudo ./confineCPU.sh"
 	sleep $BeforeRebalance
 
 	./scripts/addNode.sh "$NodesToAdd"
+	sleep 120 && sudo ./scripts/parallelCommand.sh "$AllNodes" "sudo ./confineCPU.sh" &
+	sleep 240 && sudo ./scripts/parallelCommand.sh "$AllNodes" "sudo ./confineCPU.sh" &
 	./scripts/parallelCommand.sh "$NodesToAdd" "$SetAffinity"
 	./scripts/rebalance/rebalance_started.sh $FirstNode
 	T=`date +'%Y-%m-%d-%H:%M:%S'`
